@@ -1,0 +1,14 @@
+# Dependências
+/node_modules
+
+# Arquivos de ambiente
+.env
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Arquivos gerados pelo Cypress
+/cypress/videos/
+/cypress/screenshots/
