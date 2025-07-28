@@ -85,6 +85,7 @@ Estrutura de Pastas e Explicação
 ├── package.json            # Definições e dependências do projeto
 ├── README.md               # Esta documentação
 └── server.js               # Servidor Express que serve a aplicação  
+```
 
 ### Explicação dos Componentes
 
@@ -117,6 +118,7 @@ Licença
 Este projeto está licenciado sob a licença MIT.
 
 👤 Autores
+
 <table>
   <tr>
     <td align="center" valign="top">
