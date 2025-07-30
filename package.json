@@ -21,6 +21,7 @@
     "http-proxy-middleware": "^2.0.6"
   },
   "devDependencies": {
-    "cypress": "^12.17.4"  
+    "cors": "^2.8.5",
+    "cypress": "^12.17.4"
   }
 }
