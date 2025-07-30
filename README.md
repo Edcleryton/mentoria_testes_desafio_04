@@ -28,6 +28,9 @@ Este é o **frontend** do sistema de login que se conecta à API backend (Desafi
 - ✅ **Tratamento de erros** com feedback visual
 - ✅ **Redirecionamento automático** após login bem-sucedido
 - ✅ **Logs de debug** detalhados
+- ✅ **Proxy inteligente** para API backend
+- ✅ **Monitoramento** e health checks
+- ✅ **Retry automático** para requisições falhadas
 
 ---
 
@@ -54,14 +57,18 @@ npm install
 
 ### 2. Configure as Variáveis de Ambiente
 
-Crie um arquivo `.env` na raiz do projeto:
+O arquivo `.env` será criado automaticamente com as configurações padrão:
 
 ```env
-# Configuração da API Backend
+# Configuração da API Backend (Desafio 3)
 API_TARGET=http://localhost:3000
 
 # Porta do servidor frontend
 PORT=8080
+
+# Configurações de timeout
+API_TIMEOUT=5000
+HEALTH_CHECK_TIMEOUT=3000
 ```
 
 **💡 Nota:** O sistema detecta automaticamente a porta da API do arquivo `.env` e mostra a porta correta nas mensagens de erro.
@@ -85,16 +92,7 @@ npm start
 
 **✅ Verificar se a API está funcionando:**
 ```bash
-curl -X GET http://localhost:3000/health
-```
-
-**Resposta esperada:**
-```json
-{
-  "status": "ok",
-  "message": "API está funcionando",
-  "timestamp": "2025-07-29T23:49:27.255Z"
-}
+curl -X GET http://localhost:3000/login
 ```
 
 ### Passo 2: Iniciar o Frontend (Desafio 4)
@@ -107,17 +105,14 @@ cd ../mentoria_testes_desafio_04
 npm start
 ```
 
+**Ou use o script de desenvolvimento que verifica a API automaticamente:**
+```bash
+npm run dev
+```
+
 **✅ Verificar se o frontend está funcionando:**
 ```bash
 curl -X GET http://localhost:8080/health
-```
-
-**Resposta esperada:**
-```json
-{
-  "status": "ok",
-  "message": "API está funcionando"
-}
 ```
 
 ### Passo 3: Acessar a Aplicação
@@ -129,13 +124,22 @@ curl -X GET http://localhost:8080/health
 
 ## 🧪 Testes
 
+### Teste de Integração
+
+```bash
+# Testa se a integração com a API está funcionando
+npm run test:integration
+```
+
 ### Executar Testes E2E com Cypress
 
 ```bash
+# Abrir interface do Cypress
 npm test
-```
 
-Isso abrirá a interface do Cypress, onde você poderá selecionar e rodar os testes automatizados.
+# Executar testes em modo headless
+npm run test:headless
+```
 
 ---
 
@@ -143,21 +147,30 @@ Isso abrirá a interface do Cypress, onde você poderá selecionar e rodar os te
 
 ```
 mentoria_testes_desafio_04/
-├── cypress/                    # Testes E2E
+├── config/
+│   └── api.js                    # Configurações da API
+├── middleware/
+│   └── errorHandler.js           # Middlewares de erro
+├── scripts/
+│   ├── start-dev.js              # Script de inicialização
+│   └── test-integration.js       # Teste de integração
+├── cypress/                      # Testes E2E
 │   └── e2e/
 │       └── login_spec.cy.js
-├── public/                     # Arquivos estáticos
+├── public/                       # Arquivos estáticos
 │   ├── js/
-│   │   └── login.js           # Lógica de autenticação
-│   ├── dashboard.html         # Página após login
-│   ├── login.html            # Página de login
+│   │   ├── login.js             # Lógica de autenticação
+│   │   └── rememberPassword.js  # Recuperação de senha
+│   ├── dashboard.html           # Página após login
+│   ├── login.html              # Página de login
 │   └── rememberPassword.html
-├── .env                       # Variáveis de ambiente (NÃO versionar)
+├── .env                         # Variáveis de ambiente
 ├── .gitignore
 ├── cypress.config.js
 ├── package.json
 ├── README.md
-└── server.js                  # Servidor Express
+├── INTEGRATION.md              # Documentação da integração
+└── server.js                   # Servidor Express
 ```
 
 ---
@@ -171,14 +184,24 @@ mentoria_testes_desafio_04/
 | `/` | GET | Página inicial (redireciona para login) |
 | `/login.html` | GET | Página de login |
 | `/dashboard.html` | GET | Página após login bem-sucedido |
+| `/rememberPassword.html` | GET | Página de recuperação de senha |
 | `/health` | GET | Verificação de status do frontend |
 | `/api-config` | GET | Configuração da API (host, porta) |
+| `/api-status` | GET | Status da conexão com API |
+| `/system-info` | GET | Informações do sistema |
+
+### Proxy para API (Porta 8080 → 3000)
+
+| Endpoint | Método | Descrição |
+|----------|--------|-----------|
+| `/login` | POST | Proxy para login |
+| `/remember-password` | POST | Proxy para recuperação |
+| `/register` | POST | Proxy para cadastro |
 
 ### API Backend (Porta 3000)
 
 | Endpoint | Método | Descrição |
 |----------|--------|-----------|
-| `/health` | GET | Verificação de status da API |
 | `/login` | POST | Autenticação de usuário |
 | `/remember-password` | POST | Recuperação de senha |
 | `/register` | POST | Cadastro de usuário |
@@ -191,7 +214,7 @@ mentoria_testes_desafio_04/
 ### Problema: "API backend não está disponível"
 
 **Solução:**
-1. Verifique se a API está rodando: `curl http://localhost:3000/health`
+1. Verifique se a API está rodando: `curl http://localhost:3000/login`
 2. Confirme a porta no arquivo `.env`
 3. Verifique os logs do terminal da API
 
@@ -213,13 +236,16 @@ mentoria_testes_desafio_04/
 
 ```bash
 # Verificar API Backend
-curl -X GET http://localhost:3000/health
+curl -X GET http://localhost:3000/login
 
 # Verificar Frontend
 curl -X GET http://localhost:8080/health
 
 # Verificar configuração da API
 curl -X GET http://localhost:8080/api-config
+
+# Testar integração completa
+npm run test:integration
 ```
 
 ---
