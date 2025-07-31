@@ -21,12 +21,24 @@ document.addEventListener('DOMContentLoaded', function () {
       showMessage('Por favor, preencha todos os campos.', 'error');
       return;
     }
-    if (!email.includes('@')) {
-      showMessage('Por favor, insira um email válido.', 'error');
+    // Regex simples para email válido
+    const emailRegex = /^[^@\s]+@[^@\s]+\.[^@\s]+$/;
+    if (!emailRegex.test(email)) {
+      showMessage('Por favor, insira um email válido no formato exemplo@dominio.com.', 'error');
       return;
     }
-    if (password.length < 12 || password.length > 16) {
-      showMessage('A senha deve ter entre 12 e 16 caracteres.', 'error');
+    // Regex para senha forte: 12-16 caracteres, maiúscula, minúscula, número, especial
+    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]).{12,16}$/;
+    if (!passwordRegex.test(password)) {
+      showMessage(`
+        <ul style='text-align:left; display:inline-block;'>
+          <li> * A senha deve ter entre 12 e 16 caracteres</li>
+          <li> * Deve conter pelo menos uma letra maiúscula</li>
+          <li> * Deve conter pelo menos uma letra minúscula</li>
+          <li> * Deve conter pelo menos um número</li>
+          <li> * Deve conter pelo menos um caractere especial (!@#$%^&*)</li>
+        </ul>
+      `, 'error');
       return;
     }
     showMessage('Cadastrando...', 'info');
@@ -47,4 +59,15 @@ document.addEventListener('DOMContentLoaded', function () {
       showMessage('Erro ao conectar com a API.', 'error');
     }
   });
+
+  // Olho mágico para mostrar/ocultar senha
+  const passwordInput = document.getElementById('password');
+  const togglePassword = document.querySelector('.toggle-password');
+  if (togglePassword && passwordInput) {
+    togglePassword.addEventListener('click', function () {
+      const isPassword = passwordInput.type === 'password';
+      passwordInput.type = isPassword ? 'text' : 'password';
+      togglePassword.textContent = isPassword ? 'visibility' : 'visibility_off';
+    });
+  }
 });

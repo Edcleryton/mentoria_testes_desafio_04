@@ -136,6 +136,17 @@ document.addEventListener('DOMContentLoaded', function() {
         await performLogin(email, password);
     });
 
+    // Olho mágico para mostrar/ocultar senha
+    const passwordInput = document.getElementById('password');
+    const togglePassword = document.querySelector('.toggle-password');
+    if (togglePassword && passwordInput) {
+      togglePassword.addEventListener('click', function () {
+        const isPassword = passwordInput.type === 'password';
+        passwordInput.type = isPassword ? 'text' : 'password';
+        togglePassword.textContent = isPassword ? 'visibility' : 'visibility_off';
+      });
+    }
+
     // Verificação inicial da API com timeout mais rápido
     showMessage('Inicializando sistema e verificando API backend...', 'info');
     
@@ -146,11 +157,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 const port = apiConfig ? apiConfig.apiPort : '3000';
                 showMessage(`⚠️ Servidor não disponível (porta ${port})`, 'error');
             } else {
-                showMessage('✅ API backend conectada com sucesso!', 'success');
-                // Remove a mensagem de sucesso após 3 segundos
-                setTimeout(() => {
-                    messageDiv.innerHTML = '';
-                }, 3000);
+                // Não mostra mensagem de sucesso!
+                messageDiv.innerHTML = '';
             }
         });
     });

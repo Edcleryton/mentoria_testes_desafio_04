@@ -9,8 +9,23 @@
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
   <style>
     body { display: flex; min-height: 100vh; flex-direction: column; background-color: #f5f5f5; }
-    main { flex: 1 0 auto; display: flex; align-items: center; }
-    .register-card { padding: 20px; }
+    main { flex: 1 0 auto; display: flex; align-items: center; justify-content: center; }
+    .register-card { padding: 20px; max-width: 380px; margin: 0 auto; }
+    .input-field input { max-width: 280px; margin: 0 auto; }
+    .input-field { position: relative; margin-bottom: 24px; } /* Mantido para o posicionamento do ícone */
+    .toggle-password {
+      position: absolute;
+      right: 10px;
+      top: 20%;
+      transform: translateY(-50%);
+      cursor: pointer;
+      font-size: 22px;
+      color: #757575;
+      transition: color 0.2s;
+    }
+    .toggle-password:hover {
+      color: #555;
+    }
   </style>
 </head>
 <body>
@@ -24,13 +39,18 @@
               <form id="register-form">
                 <div class="input-field">
                   <i class="material-icons prefix">email</i>
-                  <input id="email" type="email" class="validate" required>
+                  <input id="email" type="email" class="validate" required placeholder="exemplo@dominio.com">
                   <label for="email">Email</label>
+                  <span class="helper-text" data-error="Email inválido" data-success="">Formato: exemplo@dominio.com</span>
                 </div>
-                <div class="input-field">
+                <div class="input-field" style="position:relative;">
                   <i class="material-icons prefix">lock</i>
-                  <input id="password" type="password" class="validate" required>
+                  <input id="password" type="password" class="validate" required placeholder="Senha forte">
                   <label for="password">Senha</label>
+                  <span class="helper-text" data-error="Senha inválida" data-success="">
+                    A senha deve ter 12-16 caracteres, incluir maiúsculas, minúsculas, números e caractere especial.
+                  </span>
+                  <span class="material-icons toggle-password">visibility_off</span>
                 </div>
                 <div class="row">
                   <div class="col s12">
