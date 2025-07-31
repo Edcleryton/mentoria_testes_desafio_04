@@ -22,10 +22,34 @@
       flex: 1 0 auto;
       display: flex;
       align-items: center;
+      justify-content: center;
     }
 
     .login-card {
       padding: 20px;
+      max-width: 380px;
+      margin: 0 auto;
+    }
+    .input-field input {
+      max-width: 280px;
+      margin: 0 auto;
+    }
+    .input-field {
+      position: relative;
+      margin-bottom: 24px;
+    }
+    #togglePassword {
+      position: absolute;
+      right: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      cursor: pointer;
+      font-size: 22px;
+      color: #757575;
+      transition: color 0.2s;
+    }
+    #togglePassword:hover {
+      color: #555;
     }
   </style>
 </head>
@@ -44,10 +68,11 @@
                   <input id="email" type="email" class="validate" required>
                   <label for="email">Email</label>
                 </div>
-                <div class="input-field">
+                <div class="input-field" style="position:relative;">
                   <i class="material-icons prefix">lock</i>
                   <input id="password" type="password" class="validate" required>
                   <label for="password">Senha</label>
+                  <span class="material-icons toggle-password" style="position:absolute; right:10px; top:50%; transform:translateY(-50%); cursor:pointer; color:#757575; font-size:22px;">visibility_off</span>
                 </div>
                 <div class="row">
                   <div class="col s12">
@@ -60,6 +85,11 @@
                 <div class="row">
                   <div class="col s12 center-align">
                     <a href="/rememberPassword.html">Esqueceu a senha?</a>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col s12 center-align">
+                    <a href="/register.html">Não tem conta? Registre-se</a>
                   </div>
                 </div>
               </form>
