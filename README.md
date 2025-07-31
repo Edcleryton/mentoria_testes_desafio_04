@@ -190,13 +190,36 @@ mentoria_testes_desafio_04/
 | `/api-status` | GET | Status da conexão com API |
 | `/system-info` | GET | Informações do sistema |
 
+## Health Check e Debug
+
+- O endpoint `/health` está disponível no frontend para checagem rápida de disponibilidade do sistema e da API backend.
+- O frontend consome `/health` para verificar se a API está online antes de permitir ações do usuário, evitando timeouts longos.
+- Todos os acessos a endpoints são logados no terminal (debug), facilitando o rastreio de problemas.
+- Para ativar logs detalhados, utilize o middleware de logging já incluso no projeto.
+
+**Exemplo de uso:**
+```bash
+curl -X GET http://localhost:8080/health
+```
+
+**Resposta esperada:**
+```json
+{
+  "status": "ok",
+  "message": "API está funcionando",
+  "timestamp": "2024-06-20T12:34:56.789Z"
+}
+```
+
 ### Proxy para API (Porta 8080 → 3000)
 
-| Endpoint | Método | Descrição |
-|----------|--------|-----------|
-| `/login` | POST | Proxy para login |
-| `/remember-password` | POST | Proxy para recuperação |
-| `/register` | POST | Proxy para cadastro |
+| Endpoint         | Método | Descrição                |
+|------------------|--------|--------------------------|
+| `/login`         | POST   | Proxy para login         |
+| `/remember-password` | POST   | Proxy para recuperação   |
+| `/register`      | POST   | Proxy para cadastro      |
+| `/user`          | PATCH/DELETE | Proxy para update/delete user |
+| `/users`         | GET    | Proxy para listagem de usuários |
 
 ### API Backend (Porta 3000)
 
