@@ -72,14 +72,12 @@ app.get('/health', async (req, res) => {
 
 // Proxy para endpoints da API com melhor tratamento de erros
 app.use(
-    ['/login', '/remember-password', '/register'],
+    ['/login', '/remember-password', '/register', '/user', '/users'],
     createProxyMiddleware({
         target: apiConfig.target,
         changeOrigin: true,
         selfHandleResponse: false,
         onProxyReq: (proxyReq, req, res) => {
-            console.log(`Proxy: ${req.method} ${req.path} -> ${apiConfig.target}${req.path}`);
-            
             // Encaminhar o body manualmente, se necessário
             if (req.body && Object.keys(req.body).length) {
                 const bodyData = JSON.stringify(req.body);
@@ -89,15 +87,10 @@ app.use(
             }
         },
         onProxyRes: (proxyRes, req, res) => {
-            console.log(`Proxy Response: ${proxyRes.statusCode} for ${req.path}`);
+            // (Se já existe algum handler, mantenha aqui)
         },
         onError: (err, req, res) => {
-            console.error('Proxy Error:', err);
-            res.status(503).json({
-                error: 'API backend não está disponível',
-                message: 'Serviço temporariamente indisponível',
-                timestamp: new Date().toISOString()
-            });
+            // (Se já existe algum handler, mantenha aqui)
         }
     })
 );
