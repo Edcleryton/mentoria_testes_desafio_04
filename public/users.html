@@ -65,6 +65,53 @@
       </div>
     </div>
   </main>
+  <!-- Modal de Confirmação de Exclusão -->
+  <div id="deleteUserModal" class="modal">
+    <div class="modal-content">
+      <h4>Confirmar Exclusão</h4>
+      <p>Tem certeza de que deseja deletar o usuário <strong id="deleteUsernameDisplay"></strong>?</p>
+    </div>
+    <div class="modal-footer">
+      <button class="modal-close btn-flat" onclick="cancelDelete()">Cancelar</button>
+      <button class="btn red" id="confirmDeleteBtn">Deletar</button>
+    </div>
+  </div>
+  <!-- Modal de edição -->
+  <div id="editUserModal" class="modal">
+    <div class="modal-content">
+      <h4>Editar Usuário</h4>
+      <div class="row">
+        <form class="col s12" id="editUserForm">
+          <div class="row">
+            <div class="input-field col s12">
+              <input id="actualUsername" type="text" class="validate" readonly />
+              <label for="actualUsername">Actual Username</label>
+            </div>
+            <div class="input-field col s12">
+              <input id="editUsername" type="text" class="validate" />
+              <label for="editUsername">Novo Username (opcional)</label>
+            </div>
+            <div class="input-field col s12">
+              <input id="editPassword" type="password" class="validate" />
+              <label for="editPassword">Nova Senha (opcional)</label>
+            </div>
+            <div class="input-field col s12">
+              <select id="editBlocked">
+                <option value="false">Ativo</option>
+                <option value="true">Bloqueado</option>
+              </select>
+              <label>Status</label>
+            </div>
+          </div>
+          <input type="hidden" id="originalEmail" />
+          <div class="modal-footer">
+            <button class="modal-close btn grey" onclick="resetEditForm()">Cancelar</button>
+            <button type="submit" class="btn green">Salvar Alterações</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
   <script src="/js/auth.js"></script>
   <script src="/js/users.js"></script>
