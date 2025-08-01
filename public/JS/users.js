@@ -8,6 +8,15 @@ function parseJwt(token) {
 	}
 }
 
+function resetEditForm() {
+	document.getElementById('editUserForm').reset();
+}
+
+function cancelDelete() {
+	userToDelete = null; // Limpa o estado
+	const modal = M.Modal.getInstance(document.getElementById('deleteUserModal'));
+	modal.close();
+}
 document.addEventListener('DOMContentLoaded', function () {
 	if (!window.AuthUtils.isLoggedIn()) {
 		console.warn('Usuário não está logado. Redirecionando...');
@@ -72,7 +81,10 @@ document.addEventListener('DOMContentLoaded', function () {
 				headers: { 'Authorization': `Bearer ${token}` },
 			});
 
+			console.log('Resposta da API /admin/users:', response);
+
 			if (!response.ok) {
+				const errorText = await response.text(); // <== Adicione isso
 				showMessage(`Erro ao buscar usuários: ${response.status} - ${errorText}`, 'error');
 				return;
 			}
@@ -83,6 +95,7 @@ document.addEventListener('DOMContentLoaded', function () {
 		}
 	}
 
+	// Alteração na renderização da tabela para incluir botão de editar
 	function renderUsers(users) {
 		usersTableBody.innerHTML = '';
 		users.forEach((user) => {
@@ -92,21 +105,49 @@ document.addEventListener('DOMContentLoaded', function () {
         <td>${user.role}</td>
         <td>${user.blocked ? 'Bloqueado' : 'Ativo'}</td>
         <td>
-          <button class="btn-small red delete-btn" data-email="${user.username}">
+          <button class="btn-small red delete-btn" data-username="${user.username}">
             <i class="material-icons">delete</i>
+          </button>
+          <button class="btn-small blue edit-btn" data-user='${JSON.stringify(user)}'>
+            <i class="material-icons">edit</i>
           </button>
         </td>
       `;
 			usersTableBody.appendChild(tr);
 		});
-		// Adiciona eventos de deleção
+
+		document.querySelectorAll('.edit-btn').forEach((btn) => {
+			btn.addEventListener('click', function () {
+				const user = JSON.parse(this.getAttribute('data-user'));
+				openEditModal(user);
+			});
+		});
+		//delete user
+
+		let emailToDelete = null; // Estado temporário para o modal
+		function openDeleteModal(username) {
+			userToDelete = username; // salva temporariamente
+
+			document.getElementById('deleteUsernameDisplay').textContent = username;
+
+			const modal = M.Modal.getInstance(document.getElementById('deleteUserModal'));
+			modal.open();
+		}
+
 		document.querySelectorAll('.delete-btn').forEach((btn) => {
 			btn.addEventListener('click', async function () {
-				const email = this.getAttribute('data-email');
-				if (confirm(`Tem certeza que deseja deletar o usuário ${email}?`)) {
-					await deleteUser(email);
-				}
+				const user = this.getAttribute('data-username');
+				openDeleteModal(user);
 			});
+		});
+		document.getElementById('confirmDeleteBtn').addEventListener('click', async () => {
+			if (!userToDelete) return;
+
+			await deleteUser(userToDelete);
+
+			const modal = M.Modal.getInstance(document.getElementById('deleteUserModal'));
+			modal.close();
+			userToDelete = null;
 		});
 	}
 
@@ -128,6 +169,7 @@ document.addEventListener('DOMContentLoaded', function () {
 			const data = await response.json();
 			if (response.ok) {
 				showMessage('Usuário deletado com sucesso!', 'success');
+				setTimeout(() => location.reload(), 1000);
 				fetchUsers();
 			} else {
 				showMessage(data.message || 'Erro ao deletar usuário.', 'error');
@@ -136,6 +178,104 @@ document.addEventListener('DOMContentLoaded', function () {
 			showMessage('Erro ao conectar com a API.', 'error');
 		}
 	}
+
+	async function updateUser(originalUserData, updatedUser) {
+		const token = localStorage.getItem('authToken');
+
+		try {
+			const response = await fetch('/admin/user', {
+				method: 'PATCH',
+				headers: {
+					'Content-Type': 'application/json',
+					Authorization: `Bearer ${token}`,
+				},
+				body: JSON.stringify({
+					username: originalUserData.username,
+					newUsername: updatedUser.newUsername,
+					...(updatedUser.password && { newPassword: updatedUser.password }),
+					blocked: updatedUser.blocked,
+				}),
+			});
+
+			const result = await response.json();
+			if (response.ok) {
+				showMessage('Usuário atualizado com sucesso!', 'success');
+				M.Modal.getInstance(document.getElementById('editUserModal')).close();
+				fetchUsers();
+			} else {
+				showMessage(result.message || 'Erro ao atualizar usuário.', 'error');
+			}
+		} catch (error) {
+			showMessage('Erro ao conectar com a API.', 'error');
+		}
+	}
+
+	// Edit users
+	const modals = document.querySelectorAll('.modal');
+	M.Modal.init(modals);
+
+	const selects = document.querySelectorAll('select');
+	M.FormSelect.init(selects);
+
+	let originalUserData = '';
+	// Função para abrir o modal de edição
+	function openEditModal(user) {
+		originalUserData = { ...user }; // Clona os dados originais
+		const t = JSON.stringify(originalUserData);
+
+		document.getElementById('actualUsername').value = user.username;
+		document.getElementById('editUsername').value = '';
+		document.getElementById('editPassword').value = '';
+		document.getElementById('editBlocked').value = user.blocked.toString();
+
+		M.updateTextFields(); // Atualiza os labels flutuantes
+		M.FormSelect.init(document.querySelectorAll('select'));
+
+		const modal = M.Modal.getInstance(document.getElementById('editUserModal'));
+		modal.open();
+	}
+
+	// Adiciona evento para submissão do formulário
+	document.getElementById('editUserForm').addEventListener('submit', async function (e) {
+		e.preventDefault();
+		const updatedUser = {};
+
+		const newStatusStr = document.getElementById('editBlocked').value;
+		let newStatusBool = null;
+
+		if (newStatusStr === 'true') {
+			newStatusBool = true;
+		} else if (newStatusStr === 'false') {
+			newStatusBool = false;
+		}
+
+		if (newStatusBool !== null && newStatusBool !== originalUserData.blocked) {
+			updatedUser.blocked = newStatusBool;
+		}
+
+		const newUsernameInput = document.getElementById('editUsername');
+		const newUsername = newUsernameInput ? newUsernameInput.value.trim() : '';
+
+		if (newUsername !== '' && newUsername !== originalUserData.username) {
+			updatedUser.newUsername = newUsername;
+		}
+		const newPassword = document.getElementById('editPassword');
+		if (newPassword.value.trim() !== '') {
+			updatedUser.password = newPassword.value.trim();
+		}
+
+		// Verifica se houve mudanças reais
+		const noChanges = !updatedUser.newUsername && !updatedUser.blocked && !updatedUser.password;
+
+		if (noChanges) {
+			M.toast({ html: 'Nenhuma alteração detectada.' });
+			const modal = M.Modal.getInstance(document.getElementById('editUserModal'));
+			modal.close();
+			return;
+		}
+
+		await updateUser(originalUserData, updatedUser);
+	});
 
 	fetchUsers();
 });
