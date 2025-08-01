@@ -74,7 +74,7 @@ app.get('/health', async (req, res) => {
 
 // Proxy para endpoints da API com melhor tratamento de erros
 app.use(
-	['/login', '/remember-password', '/register', '/user', '/users', '/admin', '/admin/*'],
+	['/login', '/remember-password', '/register', '/user', '/users', '/admin', '/admin/users', '/admin/*'],
 	createProxyMiddleware({
 		target: apiConfig.target,
 		changeOrigin: true,
@@ -176,6 +176,6 @@ app.listen(PORT, () => {
 	console.log(`   ALL  /user - Proxy para dados do usuário`);
 	console.log(`   ALL  /users - Proxy para lista de usuários`);
 	console.log(`   ALL  /admin - Proxy para recursos administrativos`);
-	console.log(`   ALL  /admin/* - Proxy para sub-recursos administrativos`);
+	console.log(`   ALL  /admin/users - Proxy para sub-recursos administrativos`);
 	console.log('='.repeat(60));
 });
