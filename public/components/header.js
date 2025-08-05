@@ -14,9 +14,9 @@ class AppHeader extends HTMLElement {
       <header>
         <div class="navbar-fixed">
           <nav class="teal lighten-2">
-            <div class="nav-wrapper container">
-              <a href="#" class="brand-logo">QA-App</a>
-              <ul id="nav-mobile" class="right hide-on-med-and-down">
+            <div id="user-info" class="nav-wrapper container">
+              <a href="/dashboard.html" class="brand-logo">QA-App</a>
+              <ul id="nav-user-info" class="right hide-on-med-and-down">
                 <li><span>Bem-vindo, ${user.username} </span></li>
                 <li><a href="#" id="logout">Sair</a></li>
               </ul>
