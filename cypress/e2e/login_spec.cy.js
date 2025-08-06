@@ -74,7 +74,7 @@ describe('template spec', () => {
         //Assert
         cy.contains('.card-panel', 'Instruções enviadas com sucesso! retornando a página de login...').should('be.visible')
         
-    })
+    });
 
 
 });
