@@ -74,7 +74,7 @@ app.get('/health', async (req, res) => {
 
 // Proxy para endpoints da API com melhor tratamento de erros
 app.use(
-	['/login', '/remember-password', '/register', '/user', '/users', '/admin', '/admin/users', '/admin/*'],
+	['/login', '/remember-password', '/register', '/user', '/users', '/admin', '/admin/users', '/admin/reset-users'],
 	createProxyMiddleware({
 		target: apiConfig.target,
 		changeOrigin: true,
@@ -165,17 +165,18 @@ app.listen(PORT, () => {
 	console.log(`⏱️  Timeout Health: ${apiConfig.timeouts.health}ms`);
 	console.log('='.repeat(60));
 	console.log('📋 Endpoints disponíveis:');
-	console.log(`   GET  / - Página inicial`);
-	console.log(`   GET  /health - Verificação de saúde`);
-	console.log(`   GET  /api-config - Configuração da API`);
-	console.log(`   GET  /api-status - Status da API`);
-	console.log(`   GET  /system-info - Informações do sistema`);
-	console.log(`   POST /login - Proxy para login`);
-	console.log(`   POST /remember-password - Proxy para recuperação`);
-	console.log(`   POST /register - Proxy para cadastro`);
-	console.log(`   ALL  /user - Proxy para dados do usuário`);
-	console.log(`   ALL  /users - Proxy para lista de usuários`);
-	console.log(`   ALL  /admin - Proxy para recursos administrativos`);
-	console.log(`   ALL  /admin/users - Proxy para sub-recursos administrativos`);
+	console.log(`   GET    / - Página inicial`);
+	console.log(`   GET    /health - Verificação de saúde`);
+	console.log(`   GET    /api-config - Configuração da API`);
+	console.log(`   GET    /api-status - Status da API`);
+	console.log(`   GET    /system-info - Informações do sistema`);
+	console.log(`   POST   /login - Proxy para login`);
+	console.log(`   POST   /remember-password - Proxy para recuperação`);
+	console.log(`   POST   /register - Proxy para cadastro`);
+	console.log(`   PATCH  /user - Proxy para modificar dados do usuário`);
+	console.log(`   GET    /admin/users - Proxy para lista de usuários`);
+	console.log(`   PATCH  /admin/users - Proxy para modificar dados dos usuarios`);
+	console.log(`   DELETE /admin/users - Proxy para deletar usuarios`);
+	console.log(`   POST   /admin/reset-users - Proxy para restaurar ao estado inicial os dados dos usuarios`);
 	console.log('='.repeat(60));
 });
