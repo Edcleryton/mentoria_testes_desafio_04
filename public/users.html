@@ -58,6 +58,8 @@
               </table>
               <div class="center-align" style="margin-top:20px;">
                 <a href="/dashboard.html" class="btn">Voltar ao Dashboard</a>
+                <a href="#!" class="btn orange tooltipped" id="resetUsersBtn"
+                  data-tooltip="Reinicia a lista para o estado original">Reset Usuários</a>
               </div>
             </div>
           </div>
@@ -112,6 +114,19 @@
       </div>
     </div>
   </div>
+
+  <!-- Modal de Reset de Usuários -->
+  <div id="resetUsersModal" class="modal">
+    <div class="modal-content">
+      <h4>Resetar Base de Usuários</h4>
+      <p>Tem certeza que deseja restaurar os usuários para o estado inicial?</p>
+    </div>
+    <div class="modal-footer">
+      <button class="modal-close btn-flat" id="cancelResetBtn">Cancelar</button>
+      <button class="btn red" id="confirmResetBtn">Resetar</button>
+    </div>
+  </div>
+
   <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
   <script src="/js/auth.js"></script>
   <script src="/js/users.js"></script>

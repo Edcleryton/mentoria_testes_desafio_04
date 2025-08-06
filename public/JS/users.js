@@ -1,5 +1,7 @@
 // users.js - Listagem e deleção de usuários (apenas para admin)
 
+let userToDelete = null;
+let originalUserData = '';
 function parseJwt(token) {
 	try {
 		return JSON.parse(atob(token.split('.')[1]));
@@ -98,6 +100,9 @@ document.addEventListener('DOMContentLoaded', function () {
 	// Alteração na renderização da tabela para incluir botão de editar
 	function renderUsers(users) {
 		usersTableBody.innerHTML = '';
+		userToDelete = null;
+		originalUserData = null;
+
 		users.forEach((user) => {
 			const tr = document.createElement('tr');
 			tr.innerHTML = `
@@ -105,10 +110,12 @@ document.addEventListener('DOMContentLoaded', function () {
         <td>${user.role}</td>
         <td>${user.blocked ? 'Bloqueado' : 'Ativo'}</td>
         <td>
-          <button class="btn-small red delete-btn" data-username="${user.username}">
+          <button class="btn-small red delete-btn tooltipped" 
+          data-username="${user.username}" data-tooltip="Deletar ${user.username}">
             <i class="material-icons">delete</i>
           </button>
-          <button class="btn-small blue edit-btn" data-user='${JSON.stringify(user)}'>
+          <button class="btn-small blue edit-btn tooltipped" 
+          data-user='${JSON.stringify(user)}' data-tooltip="Editar ${user.username}">
             <i class="material-icons">edit</i>
           </button>
         </td>
@@ -122,14 +129,12 @@ document.addEventListener('DOMContentLoaded', function () {
 				openEditModal(user);
 			});
 		});
-		//delete user
 
-		let emailToDelete = null; // Estado temporário para o modal
+		//delete user
 		function openDeleteModal(username) {
 			userToDelete = username; // salva temporariamente
 
 			document.getElementById('deleteUsernameDisplay').textContent = username;
-
 			const modal = M.Modal.getInstance(document.getElementById('deleteUserModal'));
 			modal.open();
 		}
@@ -201,6 +206,7 @@ document.addEventListener('DOMContentLoaded', function () {
 			if (response.ok) {
 				showMessage('Usuário atualizado com sucesso!', 'success');
 				M.Modal.getInstance(document.getElementById('editUserModal')).close();
+				setTimeout(() => location.reload(), 1000);
 				fetchUsers();
 			} else {
 				showMessage(result.message || 'Erro ao atualizar usuário.', 'error');
@@ -210,14 +216,17 @@ document.addEventListener('DOMContentLoaded', function () {
 		}
 	}
 
-	// Edit users
+	// modals
 	const modals = document.querySelectorAll('.modal');
 	M.Modal.init(modals);
 
 	const selects = document.querySelectorAll('select');
 	M.FormSelect.init(selects);
 
-	let originalUserData = '';
+	//tooltips
+	const tooltippedElems = document.querySelectorAll('.tooltipped');
+	M.Tooltip.init(tooltippedElems);
+
 	// Função para abrir o modal de edição
 	function openEditModal(user) {
 		originalUserData = { ...user }; // Clona os dados originais
@@ -275,6 +284,36 @@ document.addEventListener('DOMContentLoaded', function () {
 		}
 
 		await updateUser(originalUserData, updatedUser);
+	});
+	// reset-users
+
+	let resetInProgress = false; // opcional para evitar clique duplo
+
+	document.getElementById('resetUsersBtn').addEventListener('click', function () {
+		const modal = M.Modal.getInstance(document.getElementById('resetUsersModal'));
+		modal.open();
+	});
+
+	document.getElementById('cancelResetBtn').addEventListener('click', function () {
+		resetInProgress = false;
+	});
+
+	document.getElementById('confirmResetBtn').addEventListener('click', async function () {
+		if (resetInProgress) return; // bloqueia clique duplo
+		resetInProgress = true;
+
+		const token = localStorage.getItem('authToken');
+		await fetch('/admin/reset-users', {
+			method: 'POST',
+			headers: {
+				Authorization: `Bearer ${token}`,
+			},
+		});
+
+		const modal = M.Modal.getInstance(document.getElementById('resetUsersModal'));
+		modal.close();
+		resetInProgress = false;
+		location.reload();
 	});
 
 	fetchUsers();
