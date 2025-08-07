@@ -7,7 +7,7 @@ document.addEventListener('DOMContentLoaded', function () {
 	// Função para mostrar mensagens
 	function showMessage(message, type = 'info') {
 		messageDiv.innerHTML = `
-			<div class="card-panel ${type === 'error' ? 'red' : type === 'success' ? 'green' : 'blue'} lighten-4 ${
+			<div id="messageCard" class="card-panel ${type === 'error' ? 'red' : type === 'success' ? 'green' : 'blue'} lighten-4 ${
 			type === 'error' ? 'red-text' : type === 'success' ? 'green-text' : 'blue-text'
 		} text-darken-2">
 				${message}

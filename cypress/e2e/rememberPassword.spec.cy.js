@@ -20,7 +20,7 @@ describe('Remember Password', () => {
 		cy.get('#btn-entrar');
 		cy.get("a[href='/rememberPassword.html']");
 
-		cy.contains('Acessar Sistema').should('be.visible');
+		cy.get('#titlePageLogin').contains('Acessar Sistema').should('be.visible');
 	});
 
 	after(() => {
@@ -62,8 +62,10 @@ describe('Remember Password', () => {
 		cy.get('.btn').click();
 
 		//Assert
-		cy.contains('.card-panel', 'Instruções enviadas com sucesso! retornando a página de login...').should(
+		cy.contains('#messageCard', 'Instruções enviadas com sucesso! retornando a página de login...').should(
 			'be.visible'
 		);
+
+		cy.get('#titlePageLogin', { timeout: 10000 }).contains('Acessar Sistema').should('be.visible');
 	});
 });
