@@ -21,6 +21,7 @@ describe('Login', () => {
 
 		cy.get('#btn-entrar');
 		cy.get("a[href='/rememberPassword.html']");
+		//cy.get("a[href='/register.html]");
 
 		cy.contains('Acessar Sistema').should('be.visible');
 	});
@@ -100,4 +101,31 @@ describe('Login', () => {
 		//Assert
 		cy.contains('.card-panel', 'Usuário ou senha inválidos.').should('be.visible');
 	});
+
+	it('Bloquear usuário após 3 tentativas de login inválidas', ()=>{
+		//Arrange 
+		//Cadastrar novo usuário 
+        cy.get("a[href='/register.html']").click(); //Acessar a tela de cadastro pelo link no login
+		cy.contains('Cadastro de Usuário').should('be.visible');   //certificar que foi pra tela de cadastro
+		cy.log(`Register a new user: ${userCommon.newUser}`); // cadastrar usuário novo
+		cy.get('#email').click().type(userCommon.newUser);
+		cy.get('#password').click().type(userCommon.password);
+		cy.contains('Button', 'Cadastrar').click();
+		cy.contains('.card-panel', 'Cadastrando').should('be.visible'); //Validar que o cadastro foi realizado
+		//cy.contains('.card-panel', 'Cadastro Realizado com sucesso! Redirecionando para login...').should('be.visible');
+        cy.contains('Acessar Sistema').should('be.visible'); 
+      
+		cy.log(`Logging new user ${userCommon.newUser}`);  // logar com o novo usuário cadastrado
+		cy.get('#lbl-email').click();
+		cy.get('#email').type(userCommon.newUser);
+		cy.get('#lbl-password').click();
+		cy.get('#password').type('senhainvalida');
+		cy.get('#btn-entrar').click();   //Clicar 3 vezes no botão entrar com a senha errada
+		cy.get('#btn-entrar').click();
+		cy.get('#btn-entrar').click();
+		
+		//Assert
+		cy.contains('.card-panel', 'Usuário bloqueado por excesso de tentativas.').should('be.visible'); //validar que bloqueou
+
+	})
 });
