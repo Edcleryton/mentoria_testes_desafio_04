@@ -163,9 +163,6 @@ document.addEventListener('DOMContentLoaded', function () {
 		});
 	}
 
-	// Verificação inicial da API com timeout mais rápido
-	showMessage('Inicializando sistema e verificando API backend...', 'info');
-
 	// Primeiro obtém a configuração da API
 	getApiConfig().then(() => {
 		checkApiHealth().then((isHealthy) => {
