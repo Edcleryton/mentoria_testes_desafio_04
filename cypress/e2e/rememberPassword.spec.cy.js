@@ -10,56 +10,26 @@ describe('Remember Password', () => {
 	};
 	beforeEach(() => {
 		// Arrange
-		cy.log('before...');
-		cy.visit('http://localhost:8080');
-
-		cy.get('.card');
+		cy.visitLoginPage();
 		cy.get('#email');
 		cy.get('#password');
 
 		cy.get('#btn-entrar');
-		cy.get("a[href='/rememberPassword.html']");
+		cy.get('#rememberPasswordLink').should('be.visible');
+		cy.get('#registerLink').should('be.visible');
 
 		cy.get('#titlePageLogin').contains('Acessar Sistema').should('be.visible');
 	});
 
-	after(() => {
-		cy.log('Resetando base de usuários...');
-
-		cy.request({
-			method: 'POST',
-			url: '/login',
-			body: {
-				username: userAdmin.username,
-				password: userAdmin.password,
-			},
-		}).then((loginResponse) => {
-			expect(loginResponse.status).to.eq(200);
-			const token = loginResponse.body.token;
-			cy.log(`token obtido: ${token}`);
-
-			// encadeia aqui:
-			cy.request({
-				method: 'POST',
-				url: '/admin/reset-users',
-				headers: {
-					Authorization: `Bearer ${token}`,
-				},
-			}).then((resetResponse) => {
-				expect(resetResponse.status).to.eq(200);
-				cy.log('Reset concluído com sucesso!');
-			});
-		});
-	});
-
 	it('Lembrar senha de usuário cadastrado - Link "Esqueceu a senha?"', () => {
 		//Arrange
-		cy.get("a[href='/rememberPassword.html']").click();
-		cy.get('.card-title').contains('Recuperar Senha').should('be.visible');
+		cy.get('#rememberPasswordLink').click();
+		cy.get('#titlePageRememberPassword').contains('Recuperar Senha').should('be.visible');
 
 		//act
-		cy.get('label').click().type(userCommon.username);
-		cy.get('.btn').click();
+		cy.get('#lbl-email').click();
+		cy.get('#email').type(userCommon.username);
+		cy.get('#enviarBtn').click();
 
 		//Assert
 		cy.contains('#messageCard', 'Instruções enviadas com sucesso! retornando a página de login...').should(

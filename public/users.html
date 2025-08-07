@@ -41,7 +41,7 @@
         <div class="col s12">
           <div class="card users-card">
             <div class="card-content">
-              <span class="card-title center-align">Usuários do Sistema</span>
+              <span id="titlePageUsers" class="card-title center-align">Usuários do Sistema</span>
               <div id="message" class="center-align"></div>
               <table class="striped responsive-table" id="users-table">
                 <thead>
@@ -71,7 +71,7 @@
   <div id="deleteUserModal" class="modal">
     <div class="modal-content">
       <h4>Confirmar Exclusão</h4>
-      <p>Tem certeza de que deseja deletar o usuário <strong id="deleteUsernameDisplay"></strong>?</p>
+      <p id="user-data">Tem certeza de que deseja deletar o usuário <strong id="deleteUsernameDisplay"></strong>?</p>
     </div>
     <div class="modal-footer">
       <button class="modal-close btn-flat" onclick="cancelDelete()">Cancelar</button>
@@ -87,15 +87,15 @@
           <div class="row">
             <div class="input-field col s12">
               <input id="actualUsername" type="text" class="validate" readonly />
-              <label for="actualUsername">Actual Username</label>
+              <label id="lbl-actualUsername" for="actualUsername">Actual Username</label>
             </div>
             <div class="input-field col s12">
               <input id="editUsername" type="text" class="validate" />
-              <label for="editUsername">Novo Username (opcional)</label>
+              <label id="lbl-editUsername" for="editUsername">Novo Username (opcional)</label>
             </div>
             <div class="input-field col s12">
               <input id="editPassword" type="password" class="validate" />
-              <label for="editPassword">Nova Senha (opcional)</label>
+              <label id="lbl-editPassword" for="editPassword">Nova Senha (opcional)</label>
             </div>
             <div class="input-field col s12">
               <select id="editBlocked">
@@ -107,8 +107,8 @@
           </div>
           <input type="hidden" id="originalEmail" />
           <div class="modal-footer">
-            <button class="modal-close btn grey" onclick="resetEditForm()">Cancelar</button>
-            <button type="submit" class="btn green">Salvar Alterações</button>
+            <button id="cancelUpdateBtn" class="modal-close btn grey" onclick="resetEditForm()">Cancelar</button>
+            <button type="submit" id="updateBtn" class="btn green">Salvar Alterações</button>
           </div>
         </form>
       </div>

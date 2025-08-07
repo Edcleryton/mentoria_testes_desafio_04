@@ -10,48 +10,14 @@ describe('Login', () => {
 		username: 'admin@email.com',
 		password: 'Admin123456!',
 	};
+
 	beforeEach(() => {
 		// Arrange
-		cy.log('before...');
-		cy.visit('http://localhost:8080');
-
-		cy.get('.card');
-		cy.get('#titlePageLogin').should('be.visible').contains('Acessar Sistema');
-		cy.get('#email');
-		cy.get('#password');
-
-		cy.get('#btn-entrar');
-		cy.get("a[href='/rememberPassword.html']");
-		//cy.get("a[href='/register.html]");
-
-		cy.get('#titlePageLogin').contains('Acessar Sistema').should('be.visible');
+		cy.visitLoginPage();
 	});
 
 	after(() => {
-		cy.log('Resetando base de usuários...');
-
-		cy.request({
-			method: 'POST',
-			url: '/login',
-			body: {
-				username: userAdmin.username,
-				password: userAdmin.password,
-			},
-		}).then((loginResponse) => {
-			expect(loginResponse.status).to.eq(200);
-			const token = loginResponse.body.token;
-			cy.log(`token obtido: ${token}`);
-			cy.request({
-				method: 'POST',
-				url: '/admin/reset-users',
-				headers: {
-					Authorization: `Bearer ${token}`,
-				},
-			}).then((resetResponse) => {
-				expect(resetResponse.status).to.eq(200);
-				cy.log('Reset concluído com sucesso!');
-			});
-		});
+		cy.resetUserBase(userAdmin);
 	});
 
 	it('Login bem sucedido com usuario tipo "common user"', () => {
@@ -70,6 +36,7 @@ describe('Login', () => {
 		cy.get('#nav-user-info').contains(userCommon.username);
 		cy.get('#adminUsersBtn').should('not.visible');
 		cy.get('#logout').contains('Sair').should('be.visible');
+		cy.logout();
 	});
 
 	it('Login bem sucedido com usuario tipo "admin user"', () => {
@@ -86,6 +53,7 @@ describe('Login', () => {
 		cy.get('#nav-user-info').contains(userAdmin.username);
 		cy.get('#adminUsersBtn').should('be.visible'); //admin can see the button
 		cy.get('#logout').contains('Sair').should('be.visible');
+		cy.logout();
 	});
 
 	it('Tratamento de erro com credenciais inválidas - usuario ok/senha incorreta', () => {
@@ -101,30 +69,32 @@ describe('Login', () => {
 		cy.contains('#messageCard', 'Usuário ou senha inválidos.').should('be.visible');
 	});
 
-	it('Bloquear usuário após 3 tentativas de login inválidas', ()=>{
-		//Arrange 
-		//Cadastrar novo usuário 
-        cy.get("a[href='/register.html']").click(); //Acessar a tela de cadastro pelo link no login
-		cy.contains('Cadastro de Usuário').should('be.visible');   //certificar que foi pra tela de cadastro
-		cy.log(`Register a new user: ${userCommon.newUser}`); // cadastrar usuário novo
+	it('Bloquear usuário após 3 tentativas de login inválidas', () => {
+		//Arrange
+		//Cadastrar novo usuário
+		cy.get('#registerLink').click();
+		cy.contains('Cadastro de Usuário').should('be.visible');
+		cy.log(`Register a new user: ${userCommon.newUser}`);
 		cy.get('#email').click().type(userCommon.newUser);
 		cy.get('#password').click().type(userCommon.password);
-		cy.contains('Button', 'Cadastrar').click();
-		cy.contains('.card-panel', 'Cadastrando').should('be.visible'); //Validar que o cadastro foi realizado
-		//cy.contains('.card-panel', 'Cadastro Realizado com sucesso! Redirecionando para login...').should('be.visible');
-        cy.contains('Acessar Sistema').should('be.visible'); 
-      
-		cy.log(`Logging new user ${userCommon.newUser}`);  // logar com o novo usuário cadastrado
+		cy.get('#cadastrarBtn').click();
+		cy.get('#messageCard').contains('Cadastro realizado com sucesso!').should('be.visible');
+		cy.get('#titlePageLogin').should('be.visible').contains('Acessar Sistema');
+
+		//Act
+		// logar com o novo usuário cadastrado
+		cy.log(`Logging new user ${userCommon.newUser}`);
 		cy.get('#lbl-email').click();
 		cy.get('#email').type(userCommon.newUser);
 		cy.get('#lbl-password').click();
 		cy.get('#password').type('senhainvalida');
-		cy.get('#btn-entrar').click();   //Clicar 3 vezes no botão entrar com a senha errada
-		cy.get('#btn-entrar').click();
-		cy.get('#btn-entrar').click();
-		
-		//Assert
-		cy.contains('.card-panel', 'Usuário bloqueado por excesso de tentativas.').should('be.visible'); //validar que bloqueou
 
-	})
+		//Clicar 3 vezes no botão entrar com a senha errada
+		cy.get('#btn-entrar').click();
+		cy.get('#btn-entrar').click();
+		cy.get('#btn-entrar').click();
+
+		//Assert
+		cy.contains('#messageCard', 'Usuário bloqueado por excesso de tentativas.').should('be.visible');
+	});
 });
