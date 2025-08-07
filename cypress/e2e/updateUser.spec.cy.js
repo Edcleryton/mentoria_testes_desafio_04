@@ -1,22 +1,20 @@
-describe('Login', () => {
+describe('udpate usuario comum', () => {
 	const userCommon = {
 		username: 'user@email.com',
 		password: 'User12345678!',
-		userNonExistent: 'usuarioinexistente@gmail.com',
-		newUser: 'novousuario@email.com',
 	};
 
 	const userAdmin = {
 		username: 'admin@email.com',
 		password: 'Admin123456!',
 	};
+
 	beforeEach(() => {
 		// Arrange
 		cy.log('before...');
 		cy.visit('http://localhost:8080');
 
 		cy.get('.card');
-		cy.get('#titlePageLogin').should('be.visible').contains('Acessar Sistema');
 		cy.get('#email');
 		cy.get('#password');
 
@@ -53,9 +51,9 @@ describe('Login', () => {
 		});
 	});
 
-	it('Login bem sucedido com usuario tipo "common user"', () => {
-		// Act
-		cy.log(`test ${userCommon.username}`);
+	it('Usuario comum consegue atualizar sua senha exitosamente', () => {
+		const newPassword = 'newPassword1234!';
+		// Arrange
 		cy.get('#lbl-email').click();
 		cy.get('#email').type(userCommon.username);
 		cy.get('#lbl-password').click();
@@ -65,38 +63,38 @@ describe('Login', () => {
 		// Assert
 		cy.url().should('include', '/dashboard.html');
 		cy.contains('Login bem-sucedido!');
-		cy.get('#logoApp').contains('QA-App');
+		cy.contains('QA-App');
 		cy.get('#nav-user-info').contains(userCommon.username);
 		cy.get('#adminUsersBtn').should('not.visible');
 		cy.get('#logout').contains('Sair').should('be.visible');
-	});
 
-	it('Login bem sucedido com usuario tipo "admin user"', () => {
-		cy.get('#lbl-email').click();
-		cy.get('#email').type(userAdmin.username);
+		cy.get('#updatePasswordBtn').click();
+
+		// Page Atualizar Senha
+		cy.get('#titlePageUpdatePassword').should('be.visible').contains('Atualizar Senha');
+		cy.get('#update-form').should('be.visible');
 		cy.get('#lbl-password').click();
-		cy.get('#password').type(userAdmin.password);
+		cy.get('#password').type(newPassword);
+		cy.get('#updatePasswordBtn').click();
+
+		cy.get('#messageCard', { timeout: 10000 }).should('be.visible').contains('Senha atualizada com sucesso!');
+		cy.get('#titlePageLogin', { timeout: 10000 }).should('be.visible').contains('Acessar Sistema');
+
+		//Validate if the newPassword was updated properly
+
+		cy.log(`test ${userCommon.username}`);
+		cy.get('#lbl-email').click();
+		cy.get('#email').type(userCommon.username);
+		cy.get('#lbl-password').click();
+		cy.get('#password').type(newPassword);
 		cy.get('#btn-entrar').click();
 
 		// Assert
 		cy.url().should('include', '/dashboard.html');
-		cy.contains('Login bem-sucedido!');
+		cy.get('#titlePageDashboard').contains('Login bem-sucedido!');
 		cy.contains('QA-App');
-		cy.get('#nav-user-info').contains(userAdmin.username);
-		cy.get('#adminUsersBtn').should('be.visible'); //admin can see the button
+		cy.get('#nav-user-info').contains(userCommon.username);
+		cy.get('#adminUsersBtn').should('not.visible');
 		cy.get('#logout').contains('Sair').should('be.visible');
-	});
-
-	it('Tratamento de erro com credenciais inválidas - usuario ok/senha incorreta', () => {
-		//Act
-		cy.log(`test ${userCommon.userNonExistent}`);
-		cy.get('#lbl-email').click();
-		cy.get('#email').type(userCommon.userNonExistent);
-		cy.get('#lbl-password').click();
-		cy.get('#password').type('senhaInvalida');
-		cy.get('#btn-entrar').click();
-
-		//Assert
-		cy.contains('#messageCard', 'Usuário ou senha inválidos.').should('be.visible');
 	});
 });
