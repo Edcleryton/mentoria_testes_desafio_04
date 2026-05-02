@@ -54,8 +54,8 @@ describe('udpate usuario comum', () => {
 		cy.get('#password').type(newPassword);
 		cy.get('#updatePasswordBtn').click();
 
-		cy.get('#messageCard', { timeout: 10000 }).should('be.visible').contains('Senha atualizada com sucesso!');
-		cy.get('#titlePageLogin', { timeout: 10000 }).should('be.visible').contains('Acessar Sistema');
+		cy.get('#messageCard', { timeout: 10000 }).should('be.visible').and('contain', 'Senha atualizada com sucesso!');
+		cy.get('#titlePageLogin', { timeout: 10000 }).should('be.visible').and('contain', 'Acessar Sistema');
 
 		//Validate if the newPassword was updated properly
 
@@ -102,8 +102,8 @@ describe('udpate usuario comum', () => {
 		cy.get('#password').type(newPassword);
 		cy.get('#updatePasswordBtn').click();
 
-		cy.get('#messageCard', { timeout: 10000 }).should('be.visible').contains('Senha atualizada com sucesso!');
-		cy.get('#titlePageLogin', { timeout: 10000 }).should('be.visible').contains('Acessar Sistema');
+		cy.get('#messageCard', { timeout: 10000 }).should('be.visible').and('contain', 'Senha atualizada com sucesso!');
+		cy.get('#titlePageLogin', { timeout: 10000 }).should('be.visible').and('contain', 'Acessar Sistema');
 
 		//Validate if the newPassword was updated properly
 
@@ -253,7 +253,7 @@ describe('udpate usuario comum', () => {
 		// Verifica se o botão Editar agora tem os dados atualizados
 		cy.getUserDataFromRow(userCommon.username).then((user) => {
 			expect(user.username).to.eq(userCommon.username);
-			expect(user.blocked).to.eq(userCommon.blocked);
+			expect(user.blocked).to.eq(newUserData.blocked);
 		});
 
 		cy.logout();
