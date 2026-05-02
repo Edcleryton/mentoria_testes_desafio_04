@@ -73,13 +73,9 @@ async function checkApiHealth() {
 		const controller = new AbortController();
 		const timeoutId = setTimeout(() => controller.abort(), apiConfig.timeouts.health);
 
-		const response = await fetch(`${apiConfig.target}/login`, {
-			method: 'POST',
+		const response = await fetch(`${apiConfig.target}/health`, {
+			method: 'GET',
 			headers: apiConfig.headers,
-			body: JSON.stringify({
-				username: 'health@check.com',
-				password: 'health',
-			}),
 			signal: controller.signal,
 		});
 
