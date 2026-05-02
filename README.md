@@ -57,21 +57,17 @@ npm install
 
 ### 2. Configure as Variáveis de Ambiente
 
-O arquivo `.env` será criado automaticamente com as configurações padrão:
+Crie um arquivo `.env` na raiz do projeto:
 
 ```env
-# Configuração da API Backend (Desafio 3)
+# URL da API Backend (Desafio 3)
 API_TARGET=http://localhost:3000
 
 # Porta do servidor frontend
 PORT=8080
-
-# Configurações de timeout
-API_TIMEOUT=5000
-HEALTH_CHECK_TIMEOUT=3000
 ```
 
-**💡 Nota:** O sistema detecta automaticamente a porta da API do arquivo `.env` e mostra a porta correta nas mensagens de erro.
+**💡 Nota:** O sistema detecta a porta da API a partir do `.env` e exibe a porta correta nas mensagens de erro.
 
 ---
 
@@ -134,12 +130,23 @@ npm run test:integration
 ### Executar Testes E2E com Cypress
 
 ```bash
-# Abrir interface do Cypress
-npm test
-
-# Executar testes em modo headless
+# Executar todos os testes em modo headless (requer API + frontend rodando)
 npm run test:headless
+
+# Abrir interface interativa do Cypress
+npm test
 ```
+
+**Specs disponíveis:**
+
+| Arquivo | Cenários |
+|---------|----------|
+| `login.spec.cy.js` | Login, logout, validações |
+| `register.spec.cy.js` | Cadastro de usuário |
+| `rememberPassword.spec.cy.js` | Recuperação de senha |
+| `updateUser.spec.cy.js` | Atualização de senha/username/blocked, exclusão |
+
+**Resultado: 6/6 testes passando** em `updateUser.spec.cy.js`.
 
 ---
 
